@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
-import com.azure.spring.cloud.feature.manager.FeatureManager;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -12,15 +11,35 @@ import org.springframework.web.bind.annotation.GetMapping;
 @ConfigurationProperties("controller")
 public class HelloController {
 
-  private final FeatureManager featureManager;
+  private FeatureManagerClient featureManagerClient;
 
-  public HelloController(FeatureManager featureManager) {
-    this.featureManager = featureManager;
+  FeatureFlagConfiguration featureFlagConfiguration;
+
+  public HelloController(FeatureManagerClient featureManagerClient, FeatureFlagConfiguration featureFlagConfiguration) {
+    this.featureManagerClient = featureManagerClient;
+    this.featureFlagConfiguration = featureFlagConfiguration;
   }
 
   @GetMapping("/welcome")
   public String mainWithParam(Model model) {
-    model.addAttribute("Beta", featureManager.isEnabledAsync("featureManagement.Beta").block());
+    //This code as written in the instruction does not work (as far as I can tell).
+    //model.addAttribute("Beta", featureManager.isEnabledAsync("featureManagement.Beta").block());
+
+
+    //OPTION 1:  To do feature flags using the "Configuration explorer" within Azure App Configuration service.
+    this.featureManagerClient.myConfigurationRefreshCheck();
+    boolean betaFlagAsProperty =
+        "On".equals(featureFlagConfiguration.getBeta());
+
+    //OPTION 2:  To do feature flags using the "Feature manager" (enabled/disabled toggle) within Azure App Configuration service.
+    boolean betaFlagAsFeatureFlag =
+        this.featureManagerClient
+            .getFeatureFlagStatus(
+                "Beta");
+
+    model
+        .addAttribute("Beta", betaFlagAsFeatureFlag);
+
     return "welcome";
   }
 }
