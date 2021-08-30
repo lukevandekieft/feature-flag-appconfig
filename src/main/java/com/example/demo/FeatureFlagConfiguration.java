@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
  *
  *          /application/config.Beta
  *          /application/config.message"
- *          /application/config.sentinal"
+ *          /application/config.sentinel"
  *  7.)  These fields will ONLY be mapped to their values set in Azure at application startup unless
  *       you configure monitoring
  *       (see https://docs.microsoft.com/en-us/azure/azure-app-configuration/enable-dynamic-configuration-java-spring-app).

@@ -39,6 +39,8 @@ public class HelloController {
 
     model
         .addAttribute("Beta", betaFlagAsFeatureFlag);
+    model
+        .addAttribute("Message", featureFlagConfiguration.getMessage());
 
     return "welcome";
   }
